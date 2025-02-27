@@ -106,7 +106,7 @@
         <div class="modal-body">
           <div class="container-fluid">
             <div class="col-md-6 col-sm-12 form-group">
-                <h2>(0) Participantes:</h2>
+                <h2>(<span class="num_participantes">0</span>) Participantes:</h2>
                     <div class="well table-responsive overflow-max-height">
                         <table width="100%" class="table table-striped table-hover">
                             <thead>
@@ -124,7 +124,24 @@
                     </div>                
             </div>
             <div class="col-md-6 col-sm-12 form-group">
-                <h2>Seleccionados:</h2>
+                <h2>(<span class="num_seleccionados">0</span>) Seleccionados:</h2>
+
+                <div class="well table-responsive overflow-max-height">
+                    <table width="100%" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre completo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listado-seleccionados">
+                            <tr>
+                                <td colspan="2">-- Aun no hay seleccionados --</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> 
+
             </div>            
           </div>
         </div>
@@ -147,28 +164,60 @@
         function guardarParticipantes(key, value) {
             localStorage.setItem(key, value);
             window.dispatchEvent(new CustomEvent("localStorageChanged", {
-                detail: { key, value }
+                detail: { key, value, timestamp: new Date().toISOString() }
             }));
         }
 
 
         const bolilleraCirculo = document.querySelector(".bolillera-circulo");
+        const num_participantes = document.querySelector(".num_participantes");
+        const num_seleccionados = document.querySelector(".num_seleccionados");
+
         const botonDetener = document.getElementById("btn-detener");
         const fileInput = document.getElementById('input_file');
         const lparticipantes = document.getElementById('listado-participantes');
+        const lseleccionados = document.getElementById('listado-seleccionados');
         const ultimoSeleccionado = document.getElementById('ultimo-seleccionado');
         const allowedExtensions = ['xls', 'xlsx'];    
         
         localStorage.removeItem('participantes');
         localStorage.clear();
-        let lastValue = localStorage.getItem("seleccionados") || [];
-        setInterval(() => {
-            let newValue = localStorage.getItem("seleccionados");
-            if (newValue !== lastValue) {
-                console.log("Cambio detectado en localStorage:", newValue);
-                lastValue = newValue;
+        window.addEventListener("localStorageChanged", function(event) {
+            let array = JSON.parse(event.detail.value) || [];
+            let get_ultimo = array[array.length - 1];
+            const participantes = JSON.parse(localStorage.getItem('participantes'));
+            const registrosValidos = participantes.filter(row => row.length > 0);
+
+            const persona_seleccionada = participantes[get_ultimo] || [];
+            if(persona_seleccionada.length > 0){
+                let nombre_completo = `${persona_seleccionada[0]} ${persona_seleccionada[1]}`;
+                ultimoSeleccionado.innerHTML = nombre_completo;
+                num_participantes.innerHTML = registrosValidos.length || 0;
+                num_seleccionados.innerHTML = array.length || 0;
+
+                let seleccionados = JSON.parse(localStorage.getItem('seleccionados')) || [];
+                console.log(seleccionados);
+
+                lseleccionados.innerHTML = '';
+                seleccionados.forEach((index) => {
+                    let num_row = index + 1;
+                    const persona_s = participantes[num_row] || [];
+                    const row = document.createElement('tr'); // Crear fila
+
+                    const colNumero = document.createElement('td'); // Primera columna (número)
+                    colNumero.textContent = num_row;
+
+                    const colNombre = document.createElement('td');
+                    const nombre_completo = `${persona_s[0]} ${persona_s[1]}`;
+                    colNombre.textContent = nombre_completo;
+
+                    row.appendChild(colNumero);
+                    row.appendChild(colNombre);
+                    
+                    lseleccionados.appendChild(row);                    
+                });
             }
-        }, 500);
+        });
 
 
         
@@ -291,8 +340,13 @@
             }
         });
 
-    });
 
+        $('#seleccionados').on('hidden.bs.modal', function () {
+            $('.bolillera-circulo').removeClass('paused');
+        });
+
+
+    });
     </script>
   </body>
 </html>
