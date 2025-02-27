@@ -23,26 +23,30 @@
     <style type="text/css">
         html, body{width:100%;height:100%;}
         .main-center{width: 100%;height: 100dvh;display: flex;align-items: center;justify-content: center;}
-        .vertical-align{display: flex;align-items: center;justify-content: center;}
-        .bolillera-circulo{position:relative;width:600px;height:600px;display:block;background-color: #333;border-radius:600px;overflow: hidden;display: flex;align-items: flex-end;justify-content: space-around;flex-wrap: wrap;align-content: flex-end;}
+        .vertical-align{display: flex;align-items: center;justify-content: center;flex-wrap: wrap;}
+        .bolillera-circulo{position:relative;width:600px;height:600px;display:block;background-color: #333;border-radius:600px;overflow: hidden;display: flex;align-items:center;justify-content:center;flex-wrap: wrap;align-content:center;}
         @keyframes bounce {
             0% {
                 bottom:0;
-                transform: rotate(0deg) translateX(250px) rotate(0deg);
-
-
+                transform: rotate(0deg) translateX(240px) rotate(0deg);
             }
             100% {
                 bottom:90%;
-                transform: rotate(360deg) translateX(250px) rotate(-360deg);
-
-
+                transform: rotate(360deg) translateX(240px) rotate(-360deg);
             }
         }
-
-        .bolillera-circulo span{width:50px;height:50px;margin:2px;border-radius:100px;background-color: blueviolet;display: flex;align-items: center;justify-content: center;font-size:12px;color:#FFF;position:relative;animation:2000ms ease 0s infinite alternate bounce;transform-origin: center;}
-        .bolillera-circulo span:nth-child(2n + 1){animation:3000ms ease 0s infinite alternate bounce;background-color:rgb(163, 77, 243);}
-        .bolillera-circulo span:nth-child(3n+1){animation:1500ms ease 0s infinite alternate bounce;background-color:rgb(83, 28, 134);}
+        .bolillera-circulo span{width:50px;height:50px;margin:2px;border-radius:100px;background-color: blueviolet;display: flex;align-items: center;justify-content: center;font-size:12px;color:#FFF;animation:1000ms linear 0s infinite bounce;transform-origin: center;position:relative;top: 0%;left:inherit;transform-origin:center;}
+        .bolillera-circulo span:nth-child(2n + 1){animation-duration:2000ms;background-color:rgb(163, 77, 243);}
+        .bolillera-circulo span:nth-child(3n+1){animation-duration:1500ms;background-color:rgb(83, 28, 134);}
+        .btn-file{}
+        .btn-file input[type="file"]{left:0;top:0;width:100%;height:100%;text-align: center;display: flex;outline:none}
+        .btn-file input[type="file"]::-webkit-file-upload-button {visibility: hidden;display:none;opacity:0;}
+        .btn-lg{font-size:14px;font-weight:700;text-align:left;}
+        .bolillera-circulo.paused span {animation-play-state: paused;}
+        .overflow-max-height{max-height: 300px;}
+        .table{margin:0;}
+        .modal-header, .modal-footer{border:none;}
+        .seleccionado{background-color: rgb(255, 255, 115) !important;}
     </style>
 
   </head>
@@ -52,7 +56,7 @@
     <main class="main-center">
         <section>
             <div class="container vertical-align">
-                <div class="col-md-9 col-sm-12">
+                <div class="col-md-8 col-sm-12 form-group">
                     <div class="bolillera-circulo">
                         <span data-num="1">1</span>
                         <span data-num="2">2</span>
@@ -66,78 +70,228 @@
                         <span data-num="10">10</span>                        
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-12">
-                    <form method="POST">
-                        <label for="input_file"><input id="input_file" type="file" /></label>
+                <div class="col-md-4 col-sm-12 form-group">
+                    <h1>Prototipo:</h1>
+                    <p>Selecciona un archivo Excel (xls o xlsx).</p>
+                    <form method="POST" class="form-group">
+                        <label class="btn-file btn btn-lg btn-block btn-default" for="input_file"><input id="input_file" type="file" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" /></label>
                     </form>
-                    <button class="btn btn-lg btn-block btn-warning">Detener</button>
+                    <button id="btn-detener" class="btn btn-lg btn-block btn-success">Escoger participante</button>
+                    <br/>
+
+                    <div class="well text-center">
+                        <h4>Ultimo seleccionado:</h4>
+                        <span id="ultimo-seleccionado">0</span>
+                    </div>
+
+                    <br/>
+                    <p>Modelo listado de <strong>Excel (xls/xlsx)</strong> ejemplo: <a href="https://docs.google.com/spreadsheets/d/1u19iPvl9ix2WPfovOf9wmp7YmAdH5oi8yP4155RiWMA/edit?usp=sharing" target="_blank">Ver Aqui</a></p>
+                    <br/>
+                    <button id="btn-open" class="btn btn-lg btn-warning" data-toggle="modal" data-target="#seleccionados">Ver seleccionados</button>
+
                 </div>
+
             </div>
         </section>
     </main>
 
+<!-- Modal -->
+<div class="modal fade" id="seleccionados" tabindex="-1" role="dialog" aria-labelledby="seleccionados">
+    <div class="modal-dialog" role="document" style="width:100%;max-width:90%">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel"></h4>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="col-md-6 col-sm-12 form-group">
+                <h2>(0) Participantes:</h2>
+                    <div class="well table-responsive overflow-max-height">
+                        <table width="100%" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre completo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listado-participantes">
+                                <tr>
+                                    <td colspan="2">-- Participantes no cargados --</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>                
+            </div>
+            <div class="col-md-6 col-sm-12 form-group">
+                <h2>Seleccionados:</h2>
+            </div>            
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+        </div>
+      </div>
+    </div>
+  </div>    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="./jquery.min.js"><\/script>')</script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
     <script type="text/javascript">
-/*document.addEventListener("DOMContentLoaded", function () {
-    const bolilleraCirculo = document.querySelector(".bolillera-circulo");
-    const botonDetener = document.querySelector("button");
-    let interval;
-    let animating = true;
-    let velocities = new Map();
-    const gravity = 0.2;
-    const bounceFactor = 0.7;
+    document.addEventListener("DOMContentLoaded", function () {
 
-    function initSpans() {
-        const spans = document.querySelectorAll(".bolillera-circulo span");
-        spans.forEach(span => {
-            span.style.position = "absolute";
-            span.style.left = `${Math.random() * (bolilleraCirculo.clientWidth - span.clientWidth)}px`;
-            span.style.top = `${Math.random() * (bolilleraCirculo.clientHeight - span.clientHeight)}px`;
-            velocities.set(span, { dy: (Math.random() - 0.5) * 4, velocity: 0 });
-        });
-    }
-
-    function moverSpans() {
-        const spans = document.querySelectorAll(".bolillera-circulo span");
-        spans.forEach(span => {
-            let rect = span.getBoundingClientRect();
-            let parentRect = bolilleraCirculo.getBoundingClientRect();
-            let velocity = velocities.get(span);
-
-            velocity.velocity += gravity;
-            let newY = rect.top + velocity.velocity - parentRect.top;
-
-            if (newY + rect.height >= parentRect.height) {
-                newY = parentRect.height - rect.height;
-                velocity.velocity *= -bounceFactor;
-            }
-            
-            span.style.top = `${newY}px`;
-        });
-    }
-
-    function iniciarAnimacion() {
-        interval = setInterval(moverSpans, 30);
-    }
-
-    botonDetener.addEventListener("click", function () {
-        if (animating) {
-            clearInterval(interval);
-            animating = false;
-            botonDetener.textContent = "Iniciar";
-        } else {
-            iniciarAnimacion();
-            animating = true;
-            botonDetener.textContent = "Detener";
+        function guardarParticipantes(key, value) {
+            localStorage.setItem(key, value);
+            window.dispatchEvent(new CustomEvent("localStorageChanged", {
+                detail: { key, value }
+            }));
         }
+
+
+        const bolilleraCirculo = document.querySelector(".bolillera-circulo");
+        const botonDetener = document.getElementById("btn-detener");
+        const fileInput = document.getElementById('input_file');
+        const lparticipantes = document.getElementById('listado-participantes');
+        const ultimoSeleccionado = document.getElementById('ultimo-seleccionado');
+        const allowedExtensions = ['xls', 'xlsx'];    
+        
+        localStorage.removeItem('participantes');
+        localStorage.clear();
+        let lastValue = localStorage.getItem("seleccionados") || [];
+        setInterval(() => {
+            let newValue = localStorage.getItem("seleccionados");
+            if (newValue !== lastValue) {
+                console.log("Cambio detectado en localStorage:", newValue);
+                lastValue = newValue;
+            }
+        }, 500);
+
+
+        
+        fileInput.addEventListener('change', function(event) {
+            try {
+                const file = event.target.files[0];
+                if (!file){
+                    throw new Error("oops");
+                }
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(fileExtension)) {
+                    throw new Error("Por favor, seleccione solo archivos Excel (.xls o .xlsx)");
+                    event.target.value = ''; // Clear the input
+                    return;
+                }
+                
+            // Read Excel file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const workbook = XLSX.read(e.target.result, {type: 'binary'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert sheet to JSON
+                    const data = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    const registrosValidos = data.filter(row => row.length > 0);
+                    
+                    console.log('Datos del archivo Excel:', data);
+                    if(registrosValidos.length < 1){
+                        throw new Error("No se encontraron registros validos");
+                    }
+
+                    lparticipantes.innerHTML = '';
+                    bolilleraCirculo.innerHTML = '';
+
+                        data.forEach(([nombre, apellido], index) => {
+                            let num_row = index + 1;
+                            const row = document.createElement('tr'); // Crear fila
+                            row.setAttribute('data-num', num_row);
+
+                            const colNumero = document.createElement('td'); // Primera columna (número)
+                            colNumero.textContent = num_row;
+
+                            const colNombre = document.createElement('td');
+                            const nombre_completo = `${nombre} ${apellido}`;
+                            colNombre.textContent = nombre_completo;
+
+                            row.appendChild(colNumero);
+                            row.appendChild(colNombre);
+                            
+                            lparticipantes.appendChild(row);
+                            
+                            /*****/
+
+                            const span = document.createElement('span');
+                            span.setAttribute('data-num', num_row);
+                            span.setAttribute('title', nombre_completo);
+                            span.textContent = num_row; 
+                            bolilleraCirculo.appendChild(span);  
+
+                        });
+                        
+                        if (localStorage) {
+                        localStorage.setItem('participantes', JSON.stringify(data));
+                        }
+
+                } catch (error) {
+                    console.error('Error al leer el archivo:', error);
+                    //alert('No se pudo leer el archivo Excel.');
+                }
+            };
+            
+            reader.readAsBinaryString(file);
+           
+            }
+            catch (ex) {
+                console.error("inner", ex.message);
+            }
+            finally {
+                console.log("finally");
+            }            
+        });    
+
+
+        botonDetener.addEventListener('click', function() {
+            const participantes = JSON.parse(localStorage.getItem('participantes'));
+            if(participantes){
+            let seleccionados = JSON.parse(localStorage.getItem('seleccionados')) || [];
+            
+            const personasDisponibles = participantes.filter((persona, index) => !seleccionados.includes(index));
+            if (personasDisponibles.length === 0) {
+                alert('Ya se han seleccionado todos los registros.');
+                return;
+            }
+
+            bolilleraCirculo.classList.add('paused');
+            const spans = document.querySelectorAll('.bolillera-circulo span');
+            const registrosValidos = personasDisponibles.filter(row => row.length > 0);
+            const indiceAleatorio = Math.floor(Math.random() * registrosValidos.length);
+            const personaAleatoria = personasDisponibles[indiceAleatorio] || [];
+
+                if(personaAleatoria.length > 0){
+
+                    const indiceSeleccionado = personasDisponibles.indexOf(personaAleatoria);
+                    seleccionados.push(indiceSeleccionado);
+                    guardarParticipantes('seleccionados', JSON.stringify(seleccionados));
+
+                    const elementos = document.querySelectorAll(`[data-num="${indiceAleatorio}"]`);
+
+                    elementos.forEach(elemento => {
+                        elemento.classList.add('seleccionado');
+                    });
+
+                    console.log(elementos);
+
+                    console.log(seleccionados);
+
+                }
+            }
+        });
+
     });
-
-    initSpans();
-    iniciarAnimacion();
-});*/
-
 
     </script>
   </body>
