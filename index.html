@@ -22,9 +22,10 @@
 
     <style type="text/css">
         html, body{width:100%;height:100%;}
-        .main-center{width: 100%;height: 100dvh;display: flex;align-items: center;justify-content: center;}
+        .main-center{width: 100%;height: 100dvh;display: flex;align-items: center;justify-content: center;background-color:#2a2727;}
         .vertical-align{display: flex;align-items: center;justify-content: center;flex-wrap: wrap;}
-        .bolillera-circulo{position:relative;width:600px;height:600px;display:block;background-color: #333;border-radius:600px;overflow: hidden;display: flex;align-items:center;justify-content:center;flex-wrap: wrap;align-content:center;}
+        .bolillera-circulo{position:relative;width:600px;height:600px;display:block;background: radial-gradient(circle at 50% 120%, rgb(34 34 34 / 50%), rgb(0 0 0 / 96%) 70%);border-radius:600px;overflow: hidden;display: flex;align-items:center;justify-content:center;flex-wrap: wrap;align-content:center;}
+        .bolillera-circulo::after{content: "";width: 100%;height: 100%;position: absolute;top: 0%;left: 0;border-radius: 50%;background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8) 14%, rgba(255, 255, 255, 0) 24%);transform: translateX(-150px) translateY(-120px) skewX(-20deg);filter: blur(40px);opacity: .4;}
         @keyframes bounce {
             0% {
                 bottom:0;
@@ -35,9 +36,39 @@
                 transform: rotate(360deg) translateX(240px) rotate(-360deg);
             }
         }
-        .bolillera-circulo span{width:50px;height:50px;margin:2px;border-radius:100px;background-color: blueviolet;display: flex;align-items: center;justify-content: center;font-size:12px;color:#FFF;animation:1000ms linear 0s infinite bounce;transform-origin: center;position:relative;top: 0%;left:inherit;transform-origin:center;}
-        .bolillera-circulo span:nth-child(2n + 1){animation-duration:2000ms;background-color:rgb(163, 77, 243);}
-        .bolillera-circulo span:nth-child(3n+1){animation-duration:1500ms;background-color:rgb(83, 28, 134);}
+        @keyframes bounce2 {
+            0% {
+                bottom:0;
+                transform: rotate(360deg) translateX(240px) rotate(-360deg);
+            }
+            100% {
+                bottom:90%;
+                transform: rotate(0deg) translateX(240px) rotate(0deg);
+            }
+        }        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes bounce-rotate {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg);
+            }
+            25% { 
+                transform: translateY(-10px) rotate(90deg);
+            }
+            50% { 
+                transform: translateY(0) rotate(180deg);
+            }
+            75% { 
+                transform: translateY(-10px) rotate(270deg);
+            }
+        }        
+        .bolillera-circulo span{width:50px;height:50px;margin:2px;border-radius:100px;background: radial-gradient(circle at 100px 100px, #5cabff, #0053ad);display: flex;align-items: center;justify-content: center;font-size:12px;color:#FFF;animation:2500ms linear 0s infinite bounce;transform-origin: center;position:relative;top: 0%;left:inherit;transform-origin:center;}
+        .bolillera-circulo span:nth-child(2n + 1){animation-duration:2000ms;background: radial-gradient(circle at 100px 100px, #d45cff, #c3008f);}
+        .bolillera-circulo span:nth-child(3n+1){animation-duration:1500ms;background: radial-gradient(circle at 100px 100px, #5cffbb, #009c3c);}
+        .bolillera-circulo span:nth-child(3n-1){background: radial-gradient(circle at 100px 100px, #efff5c, #ffae00);animation:2000ms linear 0s infinite bounce2;}
+     
         .btn-file{}
         .btn-file input[type="file"]{left:0;top:0;width:100%;height:100%;text-align: center;display: flex;outline:none}
         .btn-file input[type="file"]::-webkit-file-upload-button {visibility: hidden;display:none;opacity:0;}
